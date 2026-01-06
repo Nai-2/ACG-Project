@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Room Project</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+    </style>
+</head>
+<body>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@latest/build/three.module.js",
+            "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@latest/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@latest/examples/jsm/controls/OrbitControls.js"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+        // ==========================================
+        // 1. シーン・レンダラー・カメラの基本設定
+        // ==========================================
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x222222); // 背景色（暗いグレー）
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        // 明るさの補正（Blenderの色味に近づける設定）
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        document.body.appendChild(renderer.domElement);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(7, 7, 7); // カメラの初期位置
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; // 操作に滑らかな慣性をつける
+
+        // ==========================================
+        // 2. 照明設定（とりあえず全体を見えるようにする）
+        // ==========================================
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // 環境光
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.0); // 太陽光
+        sunLight.position.set(5, 10, 5);
+        scene.add(sunLight);
+
+        // ==========================================
+        // 3. Blenderファイルの読み込み（modelsフォルダから）
+        // ==========================================
+        const loader = new GLTFLoader();
+
+        // 読み込みたいファイルのパスを指定
+        const modelPath = './testRoom2.glb'; 
+        
+        loader.load(
+            modelPath,
+            (gltf) => {
+                const room = gltf.scene;
+                
+                // 必要であればここで位置や向きを調整
+                room.position.set(0, 0, 0); 
+                
+                scene.add(room);
+                console.log("モデルの読み込みが完了しました:", modelPath);
+            },
+            (xhr) => {
+                console.log((xhr.loaded / xhr.total * 100) + '% 読み込み中');
+            },
+            (error) => {
+                console.error("読み込みエラーが発生しました:", error);
+            }
+        );
+        
+
+        // ==========================================
+        // 4. アニメーションとリサイズ対応
+        // ==========================================
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // 慣性アニメーションの更新
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
