@@ -28,7 +28,21 @@
         // 1. シーン・レンダラー・カメラの基本設定
         // ==========================================
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x222222); // 背景色（暗いグレー）
+
+        
+        // =======
+        // 1.5 背景色の代わりに、全天球画像を設定
+        const textureLoader = new THREE.TextureLoader();
+        // 画像のパスを指定
+        const texture = textureLoader.load('./background.png'); 
+        // 全天球としてマッピングする設定
+        texture.mapping = THREE.EquirectangularReflectionMapping; 
+        // 色空間の設定
+        texture.colorSpace = THREE.SRGBColorSpace;
+        scene.background = texture;
+        //scene.background = new THREE.Color(0x000000); // 背景色（暗いグレー）
+        // =======
+
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
