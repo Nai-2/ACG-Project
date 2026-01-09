@@ -14,7 +14,8 @@
         "imports": {
             "three": "https://unpkg.com/three@latest/build/three.module.js",
             "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@latest/examples/jsm/loaders/GLTFLoader.js",
-            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@latest/examples/jsm/controls/OrbitControls.js"
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@latest/examples/jsm/controls/OrbitControls.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
     }
     </script>
@@ -23,6 +24,8 @@
         import * as THREE from 'three';
         import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
         import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+        //追加
+        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
         // ==========================================
         // 1. シーン・レンダラー・カメラの基本設定
@@ -72,8 +75,17 @@
         // ==========================================
         const loader = new GLTFLoader();
 
+        // ★追加: Dracoローダーの設定
+        const dracoLoader = new DRACOLoader();
+        // デコーダー（解凍用ファイル）の場所を指定（Web上のCDNを指定）
+        dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
+        // GLTFLoaderにDracoローダーを紐付ける
+        loader.setDRACOLoader(dracoLoader);
+
+
+
         // 読み込みたいファイルのパスを指定
-        const modelPath = './testRoom2.glb'; 
+        const modelPath = './furniture.glb'; 
         
         loader.load(
             modelPath,
@@ -85,6 +97,27 @@
                 
                 scene.add(room);
                 console.log("モデルの読み込みが完了しました:", modelPath);
+            },
+            (xhr) => {
+                console.log((xhr.loaded / xhr.total * 100) + '% 読み込み中');
+            },
+            (error) => {
+                console.error("読み込みエラーが発生しました:", error);
+            }
+        );
+
+        const modelPath2 = './room.glb'; 
+        
+        loader.load(
+            modelPath2,
+            (gltf) => {
+                const room = gltf.scene;
+                
+                // 必要であればここで位置や向きを調整
+                room.position.set(0, 0, 0); 
+                
+                scene.add(room);
+                console.log("モデルの読み込みが完了しました:", modelPath2);
             },
             (xhr) => {
                 console.log((xhr.loaded / xhr.total * 100) + '% 読み込み中');
