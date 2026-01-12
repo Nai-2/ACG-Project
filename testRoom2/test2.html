@@ -221,10 +221,8 @@
         // GLTFLoaderにDracoローダーを紐付ける
         loader.setDRACOLoader(dracoLoader);
 
-
-
         // 読み込みたいファイルのパスを指定
-        const modelPath = './furniture.glb'; 
+        const modelPath = './furnitureCenter.glb'; 
         
         loader.load(
             modelPath,
@@ -251,10 +249,37 @@
             }
         );
 
-        const modelPath2 = './room.glb'; 
+        const modelPath2 = './furnitureNearWall.glb'; 
         
         loader.load(
             modelPath2,
+            (gltf) => {
+                const room = gltf.scene;
+                
+                // 必要であればここで位置や向きを調整
+                room.position.set(0, 0, 0);
+                // 影の設定 
+                room.traverse((node) => {
+                    if (node.isMesh) {
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+                    }
+                });
+                scene.add(room);
+                console.log("モデルの読み込みが完了しました:", modelPath);
+            },
+            (xhr) => {
+                console.log((xhr.loaded / xhr.total * 100) + '% 読み込み中');
+            },
+            (error) => {
+                console.error("読み込みエラーが発生しました:", error);
+            }
+        );
+
+        const modelPath3 = './room.glb'; 
+        
+        loader.load(
+            modelPath3,
             (gltf) => {
                 const room = gltf.scene;
                 
@@ -277,8 +302,8 @@
                 console.error("読み込みエラーが発生しました:", error);
             }
         );
-        
 
+        
         // ==========================================
         // 4. アニメーションとリサイズ対応
         // ==========================================
