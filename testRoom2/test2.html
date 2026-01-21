@@ -171,20 +171,22 @@
         // ==========================================
         const scene = new THREE.Scene();
 
-        
+        scene.fog = new THREE.Fog(0x88ccff, 10, 500);
         // =======
-        // 1.5 背景色の代わりに、全天球画像を設定
+        // 1.5 fogの反映のため、巨大な球の内側に星空画像を配置
         const textureLoader = new THREE.TextureLoader();
-        // 画像のパスを指定
-        const texture = textureLoader.load('./background.png'); 
-        // 全天球としてマッピングする設定
-        texture.mapping = THREE.EquirectangularReflectionMapping; 
-        // 色空間の設定
-        texture.colorSpace = THREE.SRGBColorSpace;
-        scene.background = texture;
-        //scene.background = new THREE.Color(0x000000); // 背景色（暗いグレー）
-        // =======
+        const skyTexture = textureLoader.load('./background.png'); 
+        skyTexture.colorSpace = THREE.SRGBColorSpace;
 
+        const skyGeometry = new THREE.SphereGeometry(2000, 60, 40); // 巨大な球
+        skyGeometry.scale(-1, 1, 1); // 裏返し
+        const skyMaterial = new THREE.MeshBasicMaterial({
+            map: skyTexture,
+            color: 0xffffff // 画像の色そのまま
+        });
+        const skyDome = new THREE.Mesh(skyGeometry, skyMaterial);
+        scene.add(skyDome);
+        // =======
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -194,7 +196,7 @@
         renderer.shadowMap.enabled = true; // レンダラーで影を許可
         document.body.appendChild(renderer.domElement);
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
         camera.position.set(7, 7, 7); // カメラの初期位置
 
         const controls = new OrbitControls(camera, renderer.domElement);
@@ -268,6 +270,10 @@
                     sunLight.color.setHex(0xFFF4E0);
                     sunLight.position.set(-10, 5, -8); 
                     ambientLight.intensity = 0.4;
+
+                    scene.fog.color.setHex(0x90adcc);
+                    scene.fog.near = 10;
+                    scene.fog.far = 30;//朝霧を表現するため、霧を濃く
                     break;
 
                 case 'noon':
@@ -276,6 +282,10 @@
                     sunLight.color.setHex(0xffffff); 
                     sunLight.position.set(0, 10, -10); 
                     ambientLight.intensity = 0.6;
+
+                    scene.fog.color.setHex(0x88ccff); 
+                    scene.fog.near = 10;
+                    scene.fog.far = 500;//澄んだ青空を表現するため、霧は薄く
                     break;
 
                 case 'evening':
@@ -285,6 +295,10 @@
                     sunLight.position.set(10, 5, -5);
                     Lamp.intensity = 1.5;
                     ambientLight.intensity = 0.3;
+
+                    scene.fog.color.setHex(0xde8716);//FF8C00
+                    scene.fog.near = 10;
+                    scene.fog.far = 400; // 夕焼けの赤みを出すため、やや霧を濃くする
                     break;
 
                 case 'night':
@@ -294,6 +308,10 @@
                     pointLight.decay = 1.0;
                     Lamp.intensity = 1.2;
                     ambientLight.intensity = 0.1; 
+
+                    scene.fog.color.setHex(0x000000);
+                    scene.fog.near = 10; 
+                    scene.fog.far = 4000; // 霧を天球(2000)より奥にし、星をくっきりと表示
                     break;
             }
 
