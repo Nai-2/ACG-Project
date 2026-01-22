@@ -3,9 +3,13 @@
 Emphemeral Interiors
 
 Group Member:
+
 Yuta Goto　　  1W223051
+
 Rena Matsuura 1W223106
+
 Saki Fujita   1W223102
+
 Koji Naito	  1W222257
 
 
