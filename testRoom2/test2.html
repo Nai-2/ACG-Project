@@ -225,8 +225,8 @@
         sunLight.shadow.camera.bottom = -10;
         scene.add(sunLight);
 
-        const helper_sun = new THREE.DirectionalLightHelper(sunLight, 5);
-        scene.add(helper_sun);
+        // const helper_sun = new THREE.DirectionalLightHelper(sunLight, 5);
+        // scene.add(helper_sun);
 
         // --- 天井からの点光源 (pointLight) ---
         const pointLight = new THREE.PointLight(0xffffff, 1.5, 50, 1.2);
@@ -237,8 +237,8 @@
         pointLight.shadow.bias = -0.005;
         scene.add(pointLight);
 
-        const helper = new THREE.PointLightHelper(pointLight);
-        scene.add(helper);
+        // const helper = new THREE.PointLightHelper(pointLight);
+        // scene.add(helper);
 
         // --- ランプの明かり (Lamp) ---
         const Lamp = new THREE.PointLight(0xFFD580, 1, 100);
@@ -250,8 +250,8 @@
         Lamp.shadow.camera.bottom = -10;
         scene.add(Lamp);    
 
-        const helper_lamp = new THREE.PointLightHelper(Lamp);
-        scene.add(helper_lamp);
+        // const helper_lamp = new THREE.PointLightHelper(Lamp);
+        // scene.add(helper_lamp);
 
         // ==========================================
         // 時間帯切り替え関数の定義
@@ -315,10 +315,10 @@
                     break;
             }
 
-            // ヘルパーを最新の位置に更新
-            helper_sun.update();
-            helper.update();
-            helper_lamp.update();
+            // // ヘルパーを最新の位置に更新
+            // helper_sun.update();
+            // helper.update();
+            // helper_lamp.update();
         }
 
         // --- キーボード入力のイベントリスナー ---
